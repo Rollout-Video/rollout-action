@@ -20846,10 +20846,10 @@ ${PERMISSIONS_BLOCK}`
     );
   }
 }
-function hint(status) {
+function hint(status, message) {
   switch (status) {
     case 401:
-      return "Rollout did not accept the OIDC token. Check api-url (the token audience must match the Rollout deployment).";
+      return /audience/i.test(message) ? "Check api-url: the token is issued for that origin, which must be the Rollout deployment you call." : "";
     // The server's own message already says what is wrong; only add where to fix it.
     case 403:
     case 404:
@@ -20867,8 +20867,9 @@ function hint(status) {
 function describe(error2) {
   if (error2 instanceof OidcUnavailableError || error2 instanceof InputError) return error2.message;
   if (error2 instanceof ApiError) {
-    const extra = hint(error2.status);
-    return `Rollout answered ${error2.status || "with an unexpected response"}: ${error2.message}${extra ? ` ${extra}` : ""}`;
+    const extra = hint(error2.status, error2.message);
+    const message = /[.!?]$/.test(error2.message) ? error2.message : `${error2.message}.`;
+    return `Rollout answered ${error2.status || "with an unexpected response"}: ${message}${extra ? ` ${extra}` : ""}`;
   }
   if (error2 instanceof TransientError) return `Could not reach Rollout: ${error2.message}`;
   return error2 instanceof Error ? error2.message : String(error2);

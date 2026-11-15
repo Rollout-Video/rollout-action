@@ -133,8 +133,8 @@ Pull requests from forks never receive a token.
 project at rollout.video > Dashboard > GitHub. The 403 message names what is missing (for example
 the installation is not linked to a Rollout account).
 
-**401** Rollout did not accept the token. Check `api-url`: the audience must match the Rollout
-deployment you are calling.
+**401** Rollout did not accept the token, and the message says why. If it names the audience, check
+`api-url`: the token is issued for that origin, which must be the Rollout deployment you are calling.
 
 **422** The request was rejected, commonly because `url` is not publicly reachable. Preview URLs
 behind a login or Deployment Protection cannot be recorded.
