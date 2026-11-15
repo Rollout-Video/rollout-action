@@ -74,31 +74,31 @@ Pull requests from forks get no OIDC token from GitHub, so the Action cannot run
 
 ## Inputs
 
-| Input             | Default                     | Description                                                                                       |
-| ----------------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
-| `url`             |                             | URL the workflow just deployed. Recorded instead of the project URL. Must be publicly reachable.  |
-| `base-sha`        | push `before` commit        | Compare from this commit. Falls back to the last commit Rollout handled for the repository.       |
-| `policy`          | `auto`                      | `auto` (a model decides) or `always`. Can only narrow the repository's dashboard setting.         |
-| `mode`            | `suggested`                 | `demo`, `promo`, or `suggested` (use the decision's suggestion).                                  |
-| `dry-run`         | `false`                     | Only decide; never start a run or spend credits.                                                  |
-| `wait`            | `decision`                  | `none`, `decision` (return once decided) or `video` (poll until the video is ready or times out). |
-| `timeout-minutes` | `20`                        | Upper bound when `wait` is `video`.                                                               |
-| `fail-on-error`   | `false`                     | Fail the step when Rollout errors. Off by default so a video never blocks a deploy.               |
-| `api-url`         | `https://www.rollout.video` | Rollout origin (for staging). The OIDC token audience is this URL's origin.                       |
+| Input             | Default                     | Description                                                                                      |
+| ----------------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
+| `url`             |                             | URL the workflow just deployed. Recorded instead of the project URL. Must be publicly reachable. |
+| `base-sha`        | push `before` commit        | Compare from this commit. Falls back to the last commit Rollout handled for the repository.      |
+| `policy`          | `auto`                      | `auto` (a model decides) or `always`. Can only narrow the repository's dashboard setting.        |
+| `mode`            | `suggested`                 | `demo`, `promo`, or `suggested`. Accepted but ignored for now: the project's mode is used.       |
+| `dry-run`         | `false`                     | Only decide; never start a run or spend credits.                                                 |
+| `wait`            | `decision`                  | `none`, `decision` (return once decided) or `video` (poll until the run finishes or times out).  |
+| `timeout-minutes` | `20`                        | Upper bound when `wait` is `video`.                                                              |
+| `fail-on-error`   | `false`                     | Fail the step when Rollout errors. Off by default so a video never blocks a deploy.              |
+| `api-url`         | `https://www.rollout.video` | Rollout origin (for staging). The OIDC token audience is this URL's origin.                      |
 
 ## Outputs
 
-| Output                | Description                                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------- |
-| `should-create-video` | `true` or `false`.                                                                          |
-| `category`            | `new-feature`, `improvement`, `fix`, `chore`, `docs`, `dependency`, `refactor` or `config`. |
-| `confidence`          | `0` to `1`.                                                                                 |
-| `feature-title`       | The feature in a user's words, or empty.                                                    |
-| `reason`              | Why, in plain words.                                                                        |
-| `decided-by`          | `iris`, `gemini`, `policy` or `rule`.                                                       |
-| `run-id`              | Rollout run id, empty when no run was started.                                              |
-| `project-url`         | Link to the run on rollout.video.                                                           |
-| `video-url`           | Rendered video. Only set when `wait` is `video` and it finished.                            |
+| Output                | Description                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| `should-create-video` | `true` or `false`.                                                                           |
+| `category`            | `new-feature`, `improvement`, `fix`, `chore`, `docs`, `dependency`, `refactor` or `config`.  |
+| `confidence`          | `0` to `1`.                                                                                  |
+| `feature-title`       | The feature in a user's words, or empty.                                                     |
+| `reason`              | Why, in plain words.                                                                         |
+| `decided-by`          | `iris`, `gemini`, `policy` or `rule`.                                                        |
+| `run-id`              | Rollout run id, empty when no run was started.                                               |
+| `project-url`         | Link to the run on rollout.video.                                                            |
+| `video-url`           | The exported MP4. Only set when `wait` is `video` and someone has exported it in the editor. |
 
 Every run also writes a job summary with the decision and links.
 
@@ -107,10 +107,11 @@ Every run also writes a job summary with the decision and links.
 - **It never fails your job by default.** Any Rollout error ("App not installed", "repository not
   mapped", "not enough credits", a timeout) becomes a warning annotation and empty outputs. Set
   `fail-on-error: true` to turn errors into failures.
-- Network errors and 5xx responses are retried up to three times. Rollout is idempotent per
+- Network errors, 5xx responses and 409 (Rollout is still handling the commit) are retried up to three times. Rollout is idempotent per
   commit, so a retry cannot start a second run.
-- With `wait: video` the Action polls every 15 seconds (backing off) until the video is ready or
-  `timeout-minutes` passes. Cancelling the job stops polling; the run itself continues on Rollout.
+- With `wait: video` the Action polls every 15 seconds (backing off) until the run finishes or
+  `timeout-minutes` passes. A finished run links to the project, where you review and export the
+  video; `video-url` is set only after the MP4 has been exported. Cancelling the job stops polling; the run itself continues on Rollout.
 - If you also use Rollout's deployment webhook, one commit still produces one video: whichever
   trigger arrives first owns the commit, and the Action reports on that run.
 
@@ -127,9 +128,10 @@ permissions:
 
 Pull requests from forks never receive a token.
 
-**403 "App not installed" or "repository not mapped"** Install the
+**404 "App not installed", or 403 "Not set up in Rollout"** Install the
 [Rollout Video GitHub App](https://github.com/apps/rollout-video) on this repository and map it to a
-project at rollout.video > Dashboard > GitHub.
+project at rollout.video > Dashboard > GitHub. The 403 message names what is missing (for example
+the installation is not linked to a Rollout account).
 
 **401** Rollout did not accept the token. Check `api-url`: the audience must match the Rollout
 deployment you are calling.

@@ -16,7 +16,7 @@ inputs:
     required: false
     default: auto
   mode:
-    description: "demo, promo, or suggested (use the decision's suggestion)."
+    description: "Reserved. Videos currently use the mode of the mapped Rollout project."
     required: false
     default: suggested
   dry-run:
@@ -49,7 +49,7 @@ outputs:
   decided-by: { description: "iris, gemini, policy or rule" }
   run-id: { description: "Rollout run id, empty when no run was started" }
   project-url: { description: "Link to the run on rollout.video" }
-  video-url: { description: "Rendered video, only when wait is video and it finished" }
+  video-url: { description: "Exported MP4, set only once the video has been exported in Rollout" }
 runs:
   using: node24
   main: dist/index.js
