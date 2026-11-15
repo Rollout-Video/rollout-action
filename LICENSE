@@ -1,0 +1,36 @@
+Rollout Video GitHub Action
+Copyright (c) 2026 Rollout Video. All rights reserved.
+
+This software is proprietary. It is not open source.
+
+Permitted use
+
+You may use this Action, unmodified, in GitHub Actions workflows for the sole
+purpose of using the Rollout service (https://www.rollout.video), subject to the
+Rollout terms of service (https://www.rollout.video/terms). GitHub and its users
+may view and fork this repository on GitHub as GitHub's own terms of service
+require for public repositories; that does not grant any further rights.
+
+Not permitted without prior written permission from Rollout Video
+
+- Copying, modifying, merging, publishing, distributing, sublicensing or selling
+  this software or any part of it, other than as described above.
+- Using this software, or works derived from it, to build or operate a competing
+  product or service.
+- Removing or altering this notice.
+
+Third-party components
+
+The bundled file dist/index.js includes third-party open-source components
+(including @actions/core and its dependencies), which remain under their own
+licences.
+
+No warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. TO THE EXTENT PERMITTED BY LAW, IN
+NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+Contact: support@rollout.video
