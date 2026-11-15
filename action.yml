@@ -1,0 +1,55 @@
+name: Rollout Video
+description: Turn each shipped feature into a launch-ready demo or promo video.
+author: Rollout
+branding:
+  icon: video
+  color: purple
+inputs:
+  url:
+    description: URL the workflow just deployed (recorded instead of the project URL).
+    required: false
+  base-sha:
+    description: Compare from this commit. Defaults to the push's "before" commit, then the last commit Rollout saw.
+    required: false
+  policy:
+    description: "auto (a model decides) or always. Can only narrow the repository's dashboard setting."
+    required: false
+    default: auto
+  mode:
+    description: "demo, promo, or suggested (use the decision's suggestion)."
+    required: false
+    default: suggested
+  dry-run:
+    description: Only decide; never start a run or spend credits.
+    required: false
+    default: "false"
+  wait:
+    description: "none, decision (default) or video: how long the step blocks."
+    required: false
+    default: decision
+  timeout-minutes:
+    description: Upper bound when wait is video.
+    required: false
+    default: "20"
+  fail-on-error:
+    description: Fail the step when Rollout errors. Off by default so videos never block a deploy.
+    required: false
+    default: "false"
+  api-url:
+    description: Rollout origin (for staging).
+    required: false
+    default: https://www.rollout.video
+outputs:
+  should-create-video: { description: "true or false" }
+  category:
+    { description: "new-feature, improvement, fix, chore, docs, dependency, refactor or config" }
+  confidence: { description: "0 to 1" }
+  feature-title: { description: "The feature in a user's words, or empty" }
+  reason: { description: "Why, in plain words" }
+  decided-by: { description: "iris, gemini, policy or rule" }
+  run-id: { description: "Rollout run id, empty when no run was started" }
+  project-url: { description: "Link to the run on rollout.video" }
+  video-url: { description: "Rendered video, only when wait is video and it finished" }
+runs:
+  using: node24
+  main: dist/index.js
