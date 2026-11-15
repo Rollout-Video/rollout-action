@@ -20850,10 +20850,10 @@ function hint(status) {
   switch (status) {
     case 401:
       return "Rollout did not accept the OIDC token. Check api-url (the token audience must match the Rollout deployment).";
+    // The server's own message already says what is wrong; only add where to fix it.
     case 403:
-      return "Install the Rollout Video GitHub App on this repository (https://github.com/apps/rollout-video) and map it to a project at rollout.video > Dashboard > GitHub.";
     case 404:
-      return "Rollout does not know this repository or run. Install the App and map the repository at rollout.video > Dashboard > GitHub.";
+      return "App: https://github.com/apps/rollout-video. Mapping: rollout.video > Dashboard > GitHub.";
     case 409:
       return "Rollout is already handling this commit or run.";
     case 422:
